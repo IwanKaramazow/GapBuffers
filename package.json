@@ -1,0 +1,21 @@
+{
+  "name": "GapBuffers",
+  "esy": {
+    "build": [
+      "jbuilder build @install",
+      "jbuilder runtest"
+    ],
+    "buildsInSource": true
+  },
+  "scripts": {
+    "clean": "rm -rf _build && rm -rf _insttmp && rm -rf gapbuffers.install && rm -rf node_modules && rm -rf yarn-error.log && rm -rf yarn.lock"
+  },
+  "dependencies": {
+    "@opam-alpha/jbuilder": "^1.6.0",
+    "@opam-alpha/merlin": "^2.5.3",
+    "@opam-alpha/ocamlfind": "^1.7.1",
+    "@opam-alpha/ounit": "^2.0.0",
+    "@opam-alpha/reason": "^1.13.3",
+    "ocaml": "esy-ocaml/ocaml#esy"
+  }
+}

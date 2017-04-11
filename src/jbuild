@@ -1,0 +1,68 @@
+(* -*- tuareg -*- *)
+
+let isRe filename =
+    let l = String.length filename in
+       ((String.get filename (l - 1)) == 'e')
+    && ((String.get filename (l - 2)) == 'r')
+    && ((String.get filename (l - 3)) == '.')
+
+let isRei filename =
+    let l = String.length filename in
+       ((String.get filename (l - 1)) == 'i')
+    && ((String.get filename (l - 2)) == 'e')
+    && ((String.get filename (l - 3)) == 'r')
+    && ((String.get filename (l - 4)) == '.')
+
+let reToMl filename =
+    let l = String.length filename in
+    let rawBytes = Bytes.of_string filename in
+    Bytes.set rawBytes (l - 2) 'm';
+    Bytes.set rawBytes (l - 1) 'l';
+    Bytes.to_string rawBytes
+
+let reiToMli filename =
+    let l = String.length filename in
+    let rawBytes = Bytes.of_string filename in
+    Bytes.set rawBytes (l - 3) 'm';
+    Bytes.set rawBytes (l - 2) 'l';
+    Bytes.to_string rawBytes
+
+let addReRule filename buffer =
+    let mlFilename = reToMl filename in
+    Printf.bprintf buffer {|
+(rule
+    ((targets (%s))
+     (deps    (%s))
+     (action (system "refmt --print binary ${<} > %s"))))
+|} mlFilename filename mlFilename;
+()
+
+let addReiRule filename buffer =
+    let mliFilename = reiToMli filename in
+    Printf.bprintf buffer {|
+(rule
+    ((targets (%s))
+     (deps     (%s))
+     (action (system "refmt --interface true --print binary ${<} > %s"))))
+|} mliFilename filename mliFilename;
+()
+
+module J = Jbuild_plugin.V1
+
+let buf = Buffer.create 1024
+
+let () = Buffer.add_string buf "(jbuild_version 1)\n"
+
+let () =
+  let cwd = Sys.getcwd () in
+  let files = Sys.readdir cwd |> Array.to_list in
+  let reFiles = List.filter isRe files in
+  let reiFiles = List.filter isRei files in
+  List.iter (fun fileName -> addReRule fileName buf) reFiles;
+  List.iter (fun fileName -> addReiRule fileName buf) reiFiles;
+  Buffer.add_string buf {|
+(library
+ ((name        gapbuffers)
+  (public_name gapbuffers)))
+|};
+  J.send (Buffer.contents buf)

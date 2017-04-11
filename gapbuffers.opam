@@ -1,0 +1,22 @@
+opam-version: "1.2"
+name: "GapBuffers"
+version: "0.0.1"
+maintainer: "Iwan Karamazow"
+authors: [
+  "Iwan Karamazow"
+]
+license: "MIT"
+homepage: "https://github.com/IwanKaramazow/GapBuffers"
+doc: "https://github.com/IwanKaramazow/GapBuffers"
+bug-reports: "https://github.com/IwanKaramazow/GapBuffers/issues"
+dev-repo: "git://github.com/IwanKaramazow/gapbuffers.git"
+tags: [ "reason" "gap buffers" ]
+build: [
+  ["jbuilder" "build" "--only" "gapbuffers" "--root" "." "-j" jobs "@install"]
+]
+depends: [
+  "reason"  {= "1.13.3"}
+  "jbuilder" {>= "1.0+beta6"}
+  "ounit" {>= "2.0.0"}
+]
+available: [ ocaml-version >= "4.02" & ocaml-version < "4.05" ]
